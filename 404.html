@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found — Ruthless Ideas</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0A0A0A; --dark: #111111; --border: #2A2A2A;
+      --red: #E63946; --white: #FFFFFF; --muted: #888888; --light: #CCCCCC;
+      --font-head: 'Bebas Neue', sans-serif; --font-body: 'Inter', sans-serif;
+    }
+    body {
+      background: var(--black); color: var(--white);
+      font-family: var(--font-body); min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    nav {
+      background: rgba(10,10,10,0.95); border-bottom: 1px solid var(--border);
+      padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-family: var(--font-head); font-size: 24px; letter-spacing: 2px; color: var(--white); text-decoration: none; }
+    .logo span { color: var(--red); }
+    main {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 40px 24px; position: relative; overflow: hidden;
+    }
+    .bg-text {
+      position: absolute; font-family: var(--font-head); font-size: clamp(200px, 40vw, 400px);
+      color: rgba(230,57,70,0.04); top: 50%; left: 50%;
+      transform: translate(-50%, -50%); pointer-events: none; white-space: nowrap;
+      letter-spacing: -8px;
+    }
+    .content { position: relative; max-width: 540px; }
+    .error-code {
+      font-family: var(--font-head); font-size: clamp(100px, 20vw, 180px);
+      line-height: 1; color: var(--red); letter-spacing: -4px; margin-bottom: 8px;
+    }
+    .error-title {
+      font-family: var(--font-head); font-size: clamp(28px, 5vw, 48px);
+      line-height: 1; letter-spacing: 1px; margin-bottom: 20px;
+    }
+    .error-desc { font-size: 16px; color: var(--light); line-height: 1.7; margin-bottom: 40px; }
+    .btn-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; font-size: 15px; font-weight: 600;
+      border-radius: 4px; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--red); color: var(--white); }
+    .btn-primary:hover { background: #b52d38; transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--white); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--white); transform: translateY(-2px); }
+    footer { border-top: 1px solid var(--border); padding: 20px 24px; text-align: center; }
+    footer p { font-size: 13px; color: var(--muted); }
+    footer a { color: var(--light); text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--white); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">RUTHLESS<span>.</span>IDEAS</a>
+  </nav>
+  <main>
+    <div class="bg-text">404</div>
+    <div class="content">
+      <div class="error-code">404</div>
+      <h1 class="error-title">LOST IN THE IDEA SPACE</h1>
+      <p class="error-desc">
+        Looks like this page doesn't exist. Even we can't find it — and we're pretty ruthless about finding things. Head back home and let's get you where you need to be.
+      </p>
+      <div class="btn-group">
+        <a href="/" class="btn btn-primary">Back to Home &rarr;</a>
+        <a href="/#contact" class="btn btn-outline">Contact Us</a>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <p>
+      &copy; 2026 Ruthless Ideas.
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </p>
+  </footer>
+</body>
+</html>
