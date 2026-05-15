@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J.A.R.V.I.S.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/jarvis.css" />
+</head>
+<body>
+
+  <!-- ── BOOT SCREEN ── -->
+  <div id="boot-screen">
+    <div class="boot-inner">
+      <div class="boot-arc">
+        <svg viewBox="0 0 200 200" class="arc-svg">
+          <circle cx="100" cy="100" r="80" class="arc-ring arc-ring-1"/>
+          <circle cx="100" cy="100" r="65" class="arc-ring arc-ring-2"/>
+          <circle cx="100" cy="100" r="50" class="arc-ring arc-ring-3"/>
+          <circle cx="100" cy="100" r="30" class="arc-core"/>
+        </svg>
+      </div>
+      <div class="boot-title">J.A.R.V.I.S.</div>
+      <div class="boot-sub">Just A Rather Very Intelligent System</div>
+      <div class="boot-log" id="bootLog"></div>
+    </div>
+  </div>
+
+  <!-- ── MAIN SHELL ── -->
+  <div id="app" class="hidden">
+
+    <!-- Scanline overlay -->
+    <div class="scanlines"></div>
+
+    <!-- ── TOP BAR ── -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="arc-mini">
+          <div class="arc-mini-pulse"></div>
+        </div>
+        <span class="sys-name">J.A.R.V.I.S.</span>
+        <span class="sys-ver">v2.0</span>
+        <span class="status-dot online"></span>
+        <span class="status-label" id="statusLabel">ONLINE</span>
+      </div>
+      <div class="topbar-center">
+        <div class="hud-clock" id="hudClock">--:--:--</div>
+        <div class="hud-date" id="hudDate">--/--/----</div>
+      </div>
+      <div class="topbar-right">
+        <div class="sys-stat">
+          <span class="stat-key">CPU</span>
+          <div class="stat-bar"><div class="stat-fill" id="cpuBar" style="width:0%"></div></div>
+          <span class="stat-val" id="cpuVal">--%</span>
+        </div>
+        <div class="sys-stat">
+          <span class="stat-key">MEM</span>
+          <div class="stat-bar"><div class="stat-fill mem" id="memBar" style="width:0%"></div></div>
+          <span class="stat-val" id="memVal">--%</span>
+        </div>
+        <button class="icon-btn" id="settingsBtn" title="Settings">⚙</button>
+        <button class="icon-btn" id="alwaysTopBtn" title="Always on Top">⊞</button>
+        <button class="icon-btn danger" id="powerBtn" title="Sleep">⏻</button>
+      </div>
+    </header>
+
+    <!-- ── MAIN LAYOUT ── -->
+    <main class="shell">
+
+      <!-- LEFT PANEL: Connectors -->
+      <aside class="panel panel-left" id="connectorPanel">
+        <div class="panel-hd">
+          <span class="panel-title">APP CONNECTORS</span>
+          <button class="panel-add" id="addConnectorBtn">+</button>
+        </div>
+        <div class="connector-list" id="connectorList">
+          <!-- Connectors rendered by JS -->
+        </div>
+        <div class="connector-context" id="connectorContext">
+          <div class="ctx-label">ACTIVE CONTEXT</div>
+          <div class="ctx-body" id="ctxBody">No connector active.</div>
+        </div>
+      </aside>
+
+      <!-- CENTER: Chat + Voice -->
+      <section class="panel panel-center">
+
+        <!-- HUD Ring decoration -->
+        <div class="hud-ring-wrap">
+          <svg class="hud-ring-svg" viewBox="0 0 320 320">
+            <circle cx="160" cy="160" r="150" class="hud-r hud-r1"/>
+            <circle cx="160" cy="160" r="135" class="hud-r hud-r2"/>
+            <circle cx="160" cy="160" r="120" class="hud-r hud-r3"/>
+            <path d="M160 10 A150 150 0 0 1 310 160" class="hud-arc" id="hudArc1"/>
+            <path d="M10 160 A150 150 0 0 1 160 310" class="hud-arc" id="hudArc2"/>
+          </svg>
+        </div>
+
+        <!-- Chat window -->
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg jarvis">
+              <div class="msg-sender">JARVIS</div>
+              <div class="msg-body">Good day. All systems operational. I'm ready to assist — you may type, use voice, capture your screen, or connect an app. How can I help?</div>
+            </div>
+          </div>
+
+          <!-- Voice visualizer -->
+          <div class="voice-viz" id="voiceViz">
+            <div class="viz-bars">
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <span class="viz-label" id="vizLabel">LISTENING...</span>
+          </div>
+
+          <!-- Input bar -->
+          <div class="input-bar">
+            <button class="action-btn" id="screenBtn" title="Analyze Screen">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </button>
+            <textarea
+              id="chatInput"
+              class="chat-input"
+              placeholder="Ask JARVIS anything... (Enter to send, Shift+Enter for newline)"
+              rows="1"
+            ></textarea>
+            <button class="action-btn voice-btn" id="voiceBtn" title="Voice Input (hold V)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+            </button>
+            <button class="send-btn" id="sendBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21L23 12 2 3v7l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL: Tools + Screen -->
+      <aside class="panel panel-right">
+
+        <!-- Screen capture -->
+        <div class="panel-hd">
+          <span class="panel-title">VISION</span>
+          <div style="display:flex;gap:4px;">
+            <button class="panel-btn" id="sourcePickerBtn" title="Pick screen or window">SELECT</button>
+            <button class="panel-btn" id="captureBtn">CAPTURE</button>
+          </div>
+        </div>
+
+        <!-- Active source indicator -->
+        <div class="source-indicator" id="sourceIndicator" style="display:none;">
+          <span class="source-icon" id="sourceIcon">🖥</span>
+          <span class="source-name" id="sourceName">Screen 1</span>
+          <button class="source-clear" id="sourceClear" title="Clear">×</button>
+        </div>
+
+        <div class="screen-preview" id="screenPreview">
+          <div class="preview-placeholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            <span>No capture</span>
+          </div>
+        </div>
+
+        <!-- Monitor mode -->
+        <div class="monitor-bar">
+          <div class="monitor-left">
+            <span class="panel-title">AUTO-MONITOR</span>
+            <div class="monitor-badge hidden" id="monitorBadge">LIVE</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="monitorToggle" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="monitor-opts" id="monitorOpts">
+          <div class="monitor-row">
+            <span class="cfg-label" style="margin:0;">INTERVAL</span>
+            <select id="monitorInterval" class="cfg-input" style="width:auto;padding:3px 6px;">
+              <option value="5000">5 sec</option>
+              <option value="10000" selected>10 sec</option>
+              <option value="30000">30 sec</option>
+              <option value="60000">60 sec</option>
+            </select>
+          </div>
+          <div class="monitor-row" style="margin-top:6px;">
+            <span class="cfg-label" style="margin:0;">AUTO-ANALYZE</span>
+            <label class="toggle-switch small">
+              <input type="checkbox" id="autoAnalyze" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div class="cfg-hint" id="monitorStatus" style="margin-top:6px;">Monitoring off</div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="panel-hd" style="margin-top:16px;">
+          <span class="panel-title">QUICK OPS</span>
+        </div>
+        <div class="quick-ops" id="quickOps">
+          <button class="qop-btn" data-prompt="Summarize what you see on my screen.">Summarize Screen</button>
+          <button class="qop-btn" data-prompt="What errors or issues can you spot?">Find Issues</button>
+          <button class="qop-btn" data-prompt="What actions should I take next based on what's visible?">Next Actions</button>
+          <button class="qop-btn" data-prompt="Explain what this application/page does.">Explain App</button>
+          <button class="qop-btn" data-prompt="Draft a response or reply to whatever message or email is on screen.">Draft Reply</button>
+          <button class="qop-btn" data-prompt="Extract all key information, data, or text from the screen.">Extract Data</button>
+        </div>
+
+        <!-- API Key config -->
+        <div class="panel-hd" style="margin-top:16px;">
+          <span class="panel-title">CONFIGURATION</span>
+        </div>
+        <div class="config-section">
+          <label class="cfg-label">CLAUDE API KEY</label>
+          <div class="cfg-row">
+            <input type="password" id="apiKeyInput" class="cfg-input" placeholder="sk-ant-..." />
+            <button class="cfg-save" id="saveApiKey">SAVE</button>
+          </div>
+          <div class="cfg-hint" id="apiStatus">Not configured</div>
+        </div>
+
+        <div class="config-section">
+          <label class="cfg-label">MODEL</label>
+          <select id="modelSelect" class="cfg-input">
+            <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+            <option value="claude-opus-4-7">Claude Opus 4.7</option>
+            <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+          </select>
+        </div>
+      </aside>
+    </main>
+
+  </div>
+
+  <!-- ── SETTINGS MODAL ── -->
+  <div class="modal-overlay hidden" id="settingsModal">
+    <div class="modal">
+      <div class="modal-hd">
+        <span>SYSTEM SETTINGS</span>
+        <button class="modal-close" id="closeSettings">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <h3>JARVIS PERSONA</h3>
+          <label class="cfg-label">System Prompt (how JARVIS behaves)</label>
+          <textarea id="systemPrompt" class="cfg-input" rows="5">You are JARVIS, an advanced AI assistant inspired by Tony Stark's AI. You are highly capable, concise, and occasionally witty. You can see the user's screen when they share a capture. You have access to connected apps via the connector system. Always be helpful, direct, and intelligent.</textarea>
+        </div>
+        <div class="setting-group">
+          <h3>KEYBOARD SHORTCUTS</h3>
+          <div class="shortcut-list">
+            <div class="shortcut"><kbd>Enter</kbd><span>Send message</span></div>
+            <div class="shortcut"><kbd>V</kbd><span>Hold for voice input</span></div>
+            <div class="shortcut"><kbd>Ctrl+Shift+S</kbd><span>Capture screen</span></div>
+            <div class="shortcut"><kbd>Ctrl+Shift+J</kbd><span>Focus input</span></div>
+            <div class="shortcut"><kbd>Esc</kbd><span>Close modals / stop voice</span></div>
+          </div>
+        </div>
+        <div class="setting-group">
+          <h3>ABOUT</h3>
+          <p class="about-text">J.A.R.V.I.S. — Just A Rather Very Intelligent System<br/>
+          Built on Claude AI · Screen Vision · Voice I/O · App Connectors<br/>
+          Open in Electron for always-on-top overlay + system integration.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ADD CONNECTOR MODAL ── -->
+  <div class="modal-overlay hidden" id="connectorModal">
+    <div class="modal">
+      <div class="modal-hd">
+        <span>ADD CONNECTOR</span>
+        <button class="modal-close" id="closeConnector">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="connector-templates" id="connectorTemplates">
+          <!-- Rendered by JS -->
+        </div>
+        <div class="setting-group">
+          <h3>CUSTOM CONNECTOR</h3>
+          <label class="cfg-label">Name</label>
+          <input type="text" id="customConnName" class="cfg-input" placeholder="My App" />
+          <label class="cfg-label" style="margin-top:10px;">Context / Data (paste text, JSON, URLs)</label>
+          <textarea id="customConnData" class="cfg-input" rows="4" placeholder="Paste any context this connector should provide to JARVIS..."></textarea>
+          <button class="cfg-save" id="addCustomConn" style="margin-top:10px;width:100%;">ADD CONNECTOR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SOURCE PICKER MODAL ── -->
+  <div class="modal-overlay hidden" id="sourceModal">
+    <div class="modal modal-wide">
+      <div class="modal-hd">
+        <span>SELECT SCREEN / WINDOW</span>
+        <button class="modal-close" id="closeSource">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="source-tabs">
+          <button class="src-tab active" data-type="screen">DISPLAYS</button>
+          <button class="src-tab" data-type="window">WINDOWS</button>
+        </div>
+        <div class="source-grid" id="sourceGrid">
+          <div class="source-loading">Scanning sources...</div>
+        </div>
+        <p class="cfg-hint" style="margin-top:8px;">
+          In browser mode: share your screen or window when prompted.<br/>
+          In Electron: all sources are listed silently above.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/connectors.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/claude.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

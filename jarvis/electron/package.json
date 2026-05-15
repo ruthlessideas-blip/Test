@@ -1,0 +1,26 @@
+{
+  "name": "jarvis",
+  "version": "1.0.0",
+  "description": "J.A.R.V.I.S. — AI Desktop Overlay",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.jarvis.ai",
+    "productName": "JARVIS",
+    "directories": { "output": "dist" },
+    "files": ["**/*", "!node_modules", "!dist"],
+    "mac":   { "category": "public.app-category.productivity" },
+    "win":   { "target": "nsis" },
+    "linux": { "target": "AppImage" }
+  }
+}
