@@ -809,6 +809,91 @@
     .footer-badge::before { content: '●'; font-size: 8px; }
 
     /* ══════════════════════════════
+       EMPIRE MAP
+    ══════════════════════════════ */
+    #empire-map { background: var(--black); border-top: 1px solid var(--border); }
+    .em-ui {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 48px;
+      box-shadow: 0 4px 48px rgba(0,0,0,0.5);
+    }
+    .em-topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 18px;
+      background: #0d0d0d;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .em-brand { font-family: var(--font-head); font-size: 15px; color: var(--white); letter-spacing: 1px; line-height: 1.1; }
+    .em-brand-sub { font-size: 10px; color: var(--muted); display: block; font-family: var(--font-body); letter-spacing: 0; font-weight: 400; }
+    .em-sep { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
+    .em-views { display: flex; gap: 3px; }
+    .em-view-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      padding: 5px 11px; font-size: 12px; cursor: pointer; border-radius: 5px;
+      font-family: var(--font-body); transition: all 0.15s;
+    }
+    .em-view-btn.active { background: var(--card); color: var(--white); border-color: #555; }
+    .em-filters { display: flex; gap: 3px; }
+    .em-filter-btn {
+      background: transparent; border: none; color: var(--muted);
+      padding: 5px 11px; font-size: 12px; cursor: pointer; border-radius: 100px;
+      font-family: var(--font-body); transition: all 0.15s; white-space: nowrap;
+    }
+    .em-filter-btn.active { background: var(--white); color: var(--black); font-weight: 700; }
+    .em-filter-btn sup { font-size: 10px; opacity: 0.7; }
+    .em-search-fake {
+      background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+      padding: 5px 12px; font-size: 12px; color: var(--muted);
+      display: flex; align-items: center; gap: 6px; flex: 1; max-width: 180px;
+    }
+    .em-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+    .em-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--white);
+      padding: 5px 13px; border-radius: 6px; font-size: 12px; cursor: pointer;
+      font-family: var(--font-body); font-weight: 500; transition: background 0.15s;
+    }
+    .em-btn:hover { background: var(--card); }
+    .em-btn-strategy { background: var(--white); color: var(--black); border-color: var(--white); font-weight: 700; }
+    .em-btn-strategy:hover { background: #e8e8e8; }
+    .em-canvas-wrap { position: relative; background: #EEEDE7; height: 520px; }
+    #empireCanvas { width: 100%; height: 100%; display: block; cursor: default; }
+    .em-legend-box {
+      position: absolute; left: 14px; top: 14px;
+      background: #fff; border-radius: 8px; padding: 12px 14px;
+      font-family: var(--font-body); min-width: 155px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    .em-legend-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      color: #999; margin-bottom: 10px; text-transform: uppercase;
+    }
+    .em-legend-x { cursor: pointer; font-size: 14px; line-height: 1; color: #bbb; }
+    .em-cat-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .em-cat-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .em-cat-label { font-size: 12px; color: #333; flex: 1; }
+    .em-cat-count { font-size: 11px; color: #999; }
+    .em-zoom-wrap { position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 3px; }
+    .em-zoom-btn {
+      width: 32px; height: 32px; background: #fff; border: 1px solid #ddd;
+      border-radius: 5px; cursor: pointer; font-size: 16px; color: #555;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1); transition: background 0.15s; line-height: 1;
+    }
+    .em-zoom-btn:hover { background: #f0f0f0; }
+    .em-node-tip {
+      position: absolute; background: #fff; border-radius: 6px; padding: 7px 12px;
+      font-size: 12px; color: #333; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      pointer-events: none; display: none; white-space: nowrap;
+      font-family: var(--font-body); border-left: 3px solid #999;
+    }
+
+    /* ══════════════════════════════
        ANIMATIONS
     ══════════════════════════════ */
     .reveal {
@@ -835,6 +920,7 @@
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#services">Services</a></li>
+        <li><a href="#empire-map">Empire Map</a></li>
         <li><a href="#process">Process</a></li>
         <li><a href="#why">Why Us</a></li>
         <li><a href="#contact" class="nav-cta">Start a Project</a></li>
@@ -844,9 +930,10 @@
       </button>
     </div>
     <div class="mobile-menu" id="mobileMenu">
-      <a href="#about"    onclick="closeMobile()">About</a>
-      <a href="#services" onclick="closeMobile()">Services</a>
-      <a href="#process"  onclick="closeMobile()">Process</a>
+      <a href="#about"       onclick="closeMobile()">About</a>
+      <a href="#services"   onclick="closeMobile()">Services</a>
+      <a href="#empire-map" onclick="closeMobile()">Empire Map</a>
+      <a href="#process"    onclick="closeMobile()">Process</a>
       <a href="#why"      onclick="closeMobile()">Why Us</a>
       <a href="#contact"  onclick="closeMobile()">Start a Project</a>
     </div>
@@ -992,6 +1079,75 @@
           <h3>Launch Consulting</h3>
           <p>Launching a new product, service, or business? We'll build your go-to-market playbook from the ground up so day one makes an impact.</p>
           <span class="coming-badge">Coming Soon</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ EMPIRE MAP ══ -->
+  <section id="empire-map" class="section">
+    <div class="container">
+      <div style="text-align:center;margin-bottom:8px;">
+        <span class="tag">AI-Powered Strategy</span>
+        <h2 class="section-title">Map Your Empire</h2>
+        <p class="section-sub" style="margin:0 auto;text-align:center;">
+          Every business is an ecosystem. Visualize your content, products, ideas, and revenue streams as a living, connected map — powered by AI, built for builders like you.
+        </p>
+      </div>
+
+      <div class="em-ui reveal">
+        <!-- Top Bar -->
+        <div class="em-topbar">
+          <div>
+            <div class="em-brand">Ruthless Ideas Empire</div>
+            <span class="em-brand-sub">Ruthless Ideas / Auston Ruth</span>
+          </div>
+          <div class="em-sep"></div>
+          <div class="em-views">
+            <button class="em-view-btn active">⊕ Hub</button>
+            <button class="em-view-btn">⟁ Tree</button>
+          </div>
+          <div class="em-filters">
+            <button class="em-filter-btn active" data-status="all">All <sup>35</sup></button>
+            <button class="em-filter-btn" data-status="active">Active <sup>19</sup></button>
+            <button class="em-filter-btn" data-status="next">Next <sup>8</sup></button>
+            <button class="em-filter-btn" data-status="future">Future <sup>15</sup></button>
+            <button class="em-filter-btn" data-status="parked">Parked</button>
+          </div>
+          <div class="em-search-fake">🔍 Search nodes…</div>
+          <div class="em-actions">
+            <span style="color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:4px;">👁</span>
+            <button class="em-btn">+ Add</button>
+            <button class="em-btn em-btn-strategy">⬆ Strategy</button>
+          </div>
+        </div>
+
+        <!-- Map Canvas -->
+        <div class="em-canvas-wrap">
+          <canvas id="empireCanvas"></canvas>
+
+          <!-- Category Legend -->
+          <div class="em-legend-box">
+            <div class="em-legend-hd"><span>CATEGORIES</span><span class="em-legend-x">×</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#6B8FFF"></div><span class="em-cat-label">content</span><span class="em-cat-count">7</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#9575CD"></div><span class="em-cat-label">software</span><span class="em-cat-count">3</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#90CAF9"></div><span class="em-cat-label">future expansion</span><span class="em-cat-count">8</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#F4A261"></div><span class="em-cat-label">products</span><span class="em-cat-count">10</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#81C784"></div><span class="em-cat-label">education ip</span><span class="em-cat-count">4</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#4DB6AC"></div><span class="em-cat-label">community</span><span class="em-cat-count">2</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#F06292"></div><span class="em-cat-label">experiences</span><span class="em-cat-count">4</span></div>
+            <div class="em-cat-item"><div class="em-cat-dot" style="background:#4DD0E1"></div><span class="em-cat-label">revenue streams</span><span class="em-cat-count">3</span></div>
+          </div>
+
+          <!-- Zoom controls -->
+          <div class="em-zoom-wrap">
+            <button class="em-zoom-btn" id="emZoomIn">+</button>
+            <button class="em-zoom-btn" id="emZoomOut">−</button>
+            <button class="em-zoom-btn" id="emZoomFit" title="Fit">⤢</button>
+          </div>
+
+          <!-- Tooltip -->
+          <div class="em-node-tip" id="emNodeTip"></div>
         </div>
       </div>
     </div>
@@ -1248,6 +1404,270 @@
       });
     }, { threshold: 0.15 });
     reveals.forEach(el => observer.observe(el));
+
+    // ══ EMPIRE MAP ══
+    (function () {
+      const canvas = document.getElementById('empireCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const CATS = {
+        center:      { fill: '#CE93D8', stroke: '#9C27B0' },
+        content:     { fill: '#6B8FFF', stroke: '#3F51B5' },
+        software:    { fill: '#9575CD', stroke: '#673AB7' },
+        future:      { fill: '#90CAF9', stroke: '#5C9BD4' },
+        products:    { fill: '#F4A261', stroke: '#D47230' },
+        education:   { fill: '#81C784', stroke: '#4CAF50' },
+        community:   { fill: '#4DB6AC', stroke: '#009688' },
+        experiences: { fill: '#F06292', stroke: '#E91E63' },
+        revenue:     { fill: '#4DD0E1', stroke: '#00BCD4' },
+      };
+
+      const NODES = [
+        { id:0,  label:['Ruthless Ideas','/ Auston Ruth'], cat:'center',      r:40, status:'active' },
+        { id:1,  label:['YouTube'],                        cat:'content',     r:28, status:'active' },
+        { id:2,  label:['Essay/','Pineapplish'],           cat:'content',     r:19, status:'active' },
+        { id:3,  label:['Auston Ruth'],                    cat:'content',     r:21, status:'active' },
+        { id:4,  label:['Builder','Scout'],                cat:'content',     r:19, status:'active' },
+        { id:5,  label:['Live Builds'],                    cat:'content',     r:17, status:'active' },
+        { id:6,  label:['Ruthless','Ideas'],               cat:'content',     r:19, status:'active' },
+        { id:7,  label:['Podcast'],                        cat:'content',     r:21, status:'active' },
+        { id:8,  label:['Ruthless Help'],                  cat:'content',     r:23, status:'active' },
+        { id:9,  label:['Digital','Products'],             cat:'software',    r:27, status:'active' },
+        { id:10, label:['Frameworks'],                     cat:'software',    r:19, status:'active' },
+        { id:11, label:['Apps'],                           cat:'software',    r:17, status:'active' },
+        { id:12, label:['Courses'],                        cat:'education',   r:23, status:'active' },
+        { id:13, label:['Physical','Products'],            cat:'products',    r:25, status:'active' },
+        { id:14, label:['Topo'],                           cat:'products',    r:17, status:'active' },
+        { id:15, label:['Sessions','(work/ref)'],          cat:'products',    r:21, status:'active' },
+        { id:16, label:['Clothing'],                       cat:'products',    r:17, status:'next'   },
+        { id:17, label:['Workshops'],                      cat:'experiences', r:21, status:'active' },
+        { id:18, label:['New Letter'],                     cat:'experiences', r:19, status:'active' },
+        { id:19, label:['Community','& Membership'],       cat:'community',   r:25, status:'active' },
+        { id:20, label:['Collaborations'],                 cat:'future',      r:21, status:'next'   },
+        { id:21, label:['Brand','Partnerships'],           cat:'future',      r:17, status:'future' },
+        { id:22, label:['Creator','Tools'],                cat:'future',      r:17, status:'future' },
+        { id:23, label:['Ideas'],                          cat:'future',      r:17, status:'future' },
+        { id:24, label:['Ruthless','Marketing'],           cat:'revenue',     r:21, status:'active' },
+        { id:25, label:['Donations'],                      cat:'revenue',     r:15, status:'active' },
+        { id:26, label:['Promotional','Tools'],            cat:'products',    r:17, status:'next'   },
+        { id:27, label:['Referral'],                       cat:'revenue',     r:15, status:'next'   },
+        { id:28, label:['Coaching &','Mentoring'],         cat:'future',      r:19, status:'future' },
+        { id:29, label:['Record','Planning'],              cat:'future',      r:15, status:'parked' },
+        { id:30, label:['The Idea','Archive'],             cat:'future',      r:15, status:'future' },
+        { id:31, label:['Subscriptions','/ Ideas'],        cat:'revenue',     r:15, status:'future' },
+        { id:32, label:['Angles'],                         cat:'future',      r:15, status:'future' },
+        { id:33, label:['New Counter'],                    cat:'products',    r:14, status:'future' },
+        { id:34, label:['Reference','Tools'],              cat:'software',    r:15, status:'next'   },
+      ];
+
+      const EDGES = [
+        [0,1],[0,7],[0,8],[0,9],[0,13],[0,14],[0,19],[0,20],[0,24],[0,26],[0,27],
+        [1,2],[1,3],[1,4],[1,5],[1,6],
+        [9,10],[9,11],[9,12],[9,33],[9,34],
+        [13,15],[13,16],
+        [19,17],[19,18],[19,28],[19,29],
+        [20,21],
+        [8,22],[22,23],
+        [23,30],[30,31],[30,32],
+        [24,25],
+      ];
+
+      // Fractional offsets from center (fraction of canvas half-size)
+      const INIT_POS = [
+        [ 0.00,  0.00],  // 0 center
+        [-0.28, -0.28],  // 1 YouTube
+        [-0.20, -0.52],  // 2 Essay
+        [-0.04, -0.40],  // 3 Auston Ruth
+        [-0.36, -0.36],  // 4 Builder Scout
+        [-0.44, -0.50],  // 5 Live Builds
+        [-0.36, -0.14],  // 6 Ruthless Ideas
+        [ 0.28, -0.28],  // 7 Podcast
+        [ 0.44,  0.04],  // 8 Ruthless Help
+        [-0.36,  0.24],  // 9 Digital Products
+        [-0.54,  0.42],  // 10 Frameworks
+        [-0.46,  0.62],  // 11 Apps
+        [-0.16,  0.64],  // 12 Courses
+        [ 0.32,  0.36],  // 13 Physical Products
+        [ 0.60,  0.20],  // 14 Topo
+        [ 0.44,  0.52],  // 15 Sessions
+        [ 0.68,  0.40],  // 16 Clothing
+        [-0.20,  0.82],  // 17 Workshops
+        [-0.44,  0.90],  // 18 Newsletter
+        [ 0.10,  0.76],  // 19 Community
+        [ 0.16, -0.68],  // 20 Collaborations
+        [ 0.38, -0.62],  // 21 Brand Partnerships
+        [ 0.70, -0.32],  // 22 Creator Tools
+        [ 0.86, -0.20],  // 23 Ideas
+        [ 0.76,  0.16],  // 24 Ruthless Marketing
+        [ 0.88,  0.38],  // 25 Donations
+        [-0.64,  0.08],  // 26 Promotional Tools
+        [-0.60, -0.12],  // 27 Referral
+        [ 0.26,  0.90],  // 28 Coaching
+        [ 0.06,  0.90],  // 29 Record Planning
+        [ 1.00,  0.00],  // 30 Idea Archive
+        [ 1.08, -0.28],  // 31 Subscriptions
+        [ 1.12, -0.10],  // 32 Angles
+        [-0.72,  0.42],  // 33 New Counter
+        [-0.76,  0.20],  // 34 Reference Tools
+      ];
+
+      let W = 0, H = 0, cx = 0, cy = 0;
+      let activeFilter = 'all';
+      let hoveredId = null;
+      let tick = 0;
+
+      function resize() {
+        const wrap = canvas.parentElement;
+        const rect = wrap.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        W = rect.width;
+        H = rect.height;
+        canvas.width  = W * dpr;
+        canvas.height = H * dpr;
+        canvas.style.width  = W + 'px';
+        canvas.style.height = H + 'px';
+        cx = W / 2;
+        cy = H / 2;
+        placeNodes();
+      }
+
+      function placeNodes() {
+        const s = Math.min(W, H) * 0.42;
+        NODES.forEach((n, i) => {
+          const p = INIT_POS[i] || [Math.random() - 0.5, Math.random() - 0.5];
+          n.bx = cx + p[0] * s;
+          n.by = cy + p[1] * s;
+        });
+      }
+
+      function isVisible(n) {
+        return activeFilter === 'all' || n.status === activeFilter;
+      }
+
+      function draw() {
+        tick += 0.007;
+        const dpr = window.devicePixelRatio || 1;
+
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+
+        // Animate node positions (gentle float)
+        NODES.forEach((n, i) => {
+          n.x = n.bx + Math.sin(tick * 0.8 + i * 1.1) * 2.5 + Math.cos(tick * 0.4 + i * 0.7) * 1.5;
+          n.y = n.by + Math.cos(tick * 0.6 + i * 0.9) * 2.5 + Math.sin(tick * 0.5 + i * 1.3) * 1.5;
+        });
+
+        // Edges
+        EDGES.forEach(([s, t]) => {
+          const sn = NODES[s], tn = NODES[t];
+          const both = isVisible(sn) && isVisible(tn);
+          ctx.beginPath();
+          ctx.moveTo(sn.x, sn.y);
+          ctx.lineTo(tn.x, tn.y);
+          ctx.strokeStyle = both ? 'rgba(120,115,105,0.32)' : 'rgba(120,115,105,0.08)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([]);
+          ctx.stroke();
+        });
+
+        // Nodes
+        NODES.forEach(n => {
+          const vis = isVisible(n);
+          const cat = CATS[n.cat];
+          const hov = hoveredId === n.id;
+          const r   = hov ? n.r + 3 : n.r;
+
+          ctx.globalAlpha = vis ? 1 : 0.18;
+
+          if (hov) { ctx.shadowColor = cat.fill; ctx.shadowBlur = 14; }
+
+          // Fill
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+          ctx.fillStyle = cat.fill + (vis ? (hov ? '55' : '28') : '12');
+          ctx.fill();
+
+          // Border (dashed for future/parked)
+          ctx.setLineDash((n.status === 'future' || n.status === 'parked') ? [4, 3] : []);
+          ctx.strokeStyle = cat.stroke;
+          ctx.lineWidth = hov ? 2.5 : 1.8;
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.shadowBlur = 0;
+
+          // Label
+          if (vis || hov) {
+            ctx.fillStyle = '#1A1A18';
+            const fs = Math.max(8.5, r * 0.33);
+            ctx.font = `500 ${fs}px Inter, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const lh = fs * 1.3;
+            n.label.forEach((line, li) => {
+              ctx.fillText(line, n.x, n.y + (li - (n.label.length - 1) / 2) * lh);
+            });
+          }
+
+          ctx.globalAlpha = 1;
+        });
+
+        ctx.restore();
+        requestAnimationFrame(draw);
+      }
+
+      function canvasPos(e) {
+        const r = canvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+
+      canvas.addEventListener('mousemove', e => {
+        const p = canvasPos(e);
+        hoveredId = null;
+        for (const n of NODES) {
+          if (n.x === undefined) continue;
+          const dx = p.x - n.x, dy = p.y - n.y;
+          if (dx * dx + dy * dy < (n.r + 6) * (n.r + 6)) { hoveredId = n.id; break; }
+        }
+        canvas.style.cursor = hoveredId !== null ? 'pointer' : 'default';
+        const tip = document.getElementById('emNodeTip');
+        if (tip) {
+          if (hoveredId !== null) {
+            const n = NODES[hoveredId];
+            const cat = CATS[n.cat];
+            tip.textContent = n.label.join(' ') + ' · ' + n.cat + ' · ' + n.status;
+            tip.style.borderLeftColor = cat.stroke;
+            tip.style.display = 'block';
+            tip.style.left = (p.x + 14) + 'px';
+            tip.style.top  = (p.y - 10) + 'px';
+          } else {
+            tip.style.display = 'none';
+          }
+        }
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        hoveredId = null;
+        const tip = document.getElementById('emNodeTip');
+        if (tip) tip.style.display = 'none';
+      });
+
+      // Filter buttons
+      document.querySelectorAll('.em-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.em-filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.dataset.status;
+        });
+      });
+
+      // Start
+      resize();
+      const ro = new ResizeObserver(() => resize());
+      ro.observe(canvas.parentElement);
+      draw();
+    })();
 
     // Contact form
     function handleSubmit(e) {
