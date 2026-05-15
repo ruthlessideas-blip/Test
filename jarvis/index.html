@@ -142,13 +142,55 @@
         <!-- Screen capture -->
         <div class="panel-hd">
           <span class="panel-title">VISION</span>
-          <button class="panel-btn" id="captureBtn">CAPTURE</button>
+          <div style="display:flex;gap:4px;">
+            <button class="panel-btn" id="sourcePickerBtn" title="Pick screen or window">SELECT</button>
+            <button class="panel-btn" id="captureBtn">CAPTURE</button>
+          </div>
         </div>
+
+        <!-- Active source indicator -->
+        <div class="source-indicator" id="sourceIndicator" style="display:none;">
+          <span class="source-icon" id="sourceIcon">🖥</span>
+          <span class="source-name" id="sourceName">Screen 1</span>
+          <button class="source-clear" id="sourceClear" title="Clear">×</button>
+        </div>
+
         <div class="screen-preview" id="screenPreview">
           <div class="preview-placeholder">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             <span>No capture</span>
           </div>
+        </div>
+
+        <!-- Monitor mode -->
+        <div class="monitor-bar">
+          <div class="monitor-left">
+            <span class="panel-title">AUTO-MONITOR</span>
+            <div class="monitor-badge hidden" id="monitorBadge">LIVE</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="monitorToggle" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="monitor-opts" id="monitorOpts">
+          <div class="monitor-row">
+            <span class="cfg-label" style="margin:0;">INTERVAL</span>
+            <select id="monitorInterval" class="cfg-input" style="width:auto;padding:3px 6px;">
+              <option value="5000">5 sec</option>
+              <option value="10000" selected>10 sec</option>
+              <option value="30000">30 sec</option>
+              <option value="60000">60 sec</option>
+            </select>
+          </div>
+          <div class="monitor-row" style="margin-top:6px;">
+            <span class="cfg-label" style="margin:0;">AUTO-ANALYZE</span>
+            <label class="toggle-switch small">
+              <input type="checkbox" id="autoAnalyze" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div class="cfg-hint" id="monitorStatus" style="margin-top:6px;">Monitoring off</div>
         </div>
 
         <!-- Quick actions -->
@@ -242,6 +284,29 @@
           <textarea id="customConnData" class="cfg-input" rows="4" placeholder="Paste any context this connector should provide to JARVIS..."></textarea>
           <button class="cfg-save" id="addCustomConn" style="margin-top:10px;width:100%;">ADD CONNECTOR</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SOURCE PICKER MODAL ── -->
+  <div class="modal-overlay hidden" id="sourceModal">
+    <div class="modal modal-wide">
+      <div class="modal-hd">
+        <span>SELECT SCREEN / WINDOW</span>
+        <button class="modal-close" id="closeSource">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="source-tabs">
+          <button class="src-tab active" data-type="screen">DISPLAYS</button>
+          <button class="src-tab" data-type="window">WINDOWS</button>
+        </div>
+        <div class="source-grid" id="sourceGrid">
+          <div class="source-loading">Scanning sources...</div>
+        </div>
+        <p class="cfg-hint" style="margin-top:8px;">
+          In browser mode: share your screen or window when prompted.<br/>
+          In Electron: all sources are listed silently above.
+        </p>
       </div>
     </div>
   </div>

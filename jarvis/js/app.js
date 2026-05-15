@@ -41,10 +41,32 @@ const systemPromptTA     = $('systemPrompt');
 const powerBtn           = $('powerBtn');
 const bootLog            = $('bootLog');
 
+// Vision / monitor
+const sourcePickerBtn  = $('sourcePickerBtn');
+const sourceModal      = $('sourceModal');
+const closeSource      = $('closeSource');
+const sourceGrid       = $('sourceGrid');
+const sourceIndicator  = $('sourceIndicator');
+const sourceIcon       = $('sourceIcon');
+const sourceName       = $('sourceName');
+const sourceClear      = $('sourceClear');
+const monitorToggle    = $('monitorToggle');
+const monitorOpts      = $('monitorOpts');
+const monitorInterval  = $('monitorInterval');
+const autoAnalyze      = $('autoAnalyze');
+const monitorStatus    = $('monitorStatus');
+const monitorBadge     = $('monitorBadge');
+
 // ── State ──
-let currentScreenshot = null; // base64 PNG
-let pendingScreenshot = null; // queued for next send
+let currentScreenshot = null;
+let pendingScreenshot = null;
 let isSending = false;
+
+// Vision state
+let activeSource    = null; // { id, name, isScreen }
+let monitorTimer    = null;
+let currentSrcFilter = 'screen'; // 'screen' | 'window'
+let allSources      = [];
 
 // ── BOOT SEQUENCE ──
 const bootLines = [
@@ -270,46 +292,179 @@ function initVoice() {
   });
 }
 
+// ── SOURCE PICKER ──
+sourcePickerBtn.addEventListener('click', () => openSourcePicker());
+closeSource.addEventListener('click', () => sourceModal.classList.add('hidden'));
+sourceModal.addEventListener('click', e => { if (e.target === sourceModal) sourceModal.classList.add('hidden'); });
+
+document.querySelectorAll('.src-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.src-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentSrcFilter = tab.dataset.type;
+    renderSources();
+  });
+});
+
+async function openSourcePicker() {
+  sourceModal.classList.remove('hidden');
+  sourceGrid.innerHTML = '<div class="source-loading">Scanning sources...</div>';
+
+  if (window.jarvisElectron) {
+    try {
+      allSources = await window.jarvisElectron.getSources();
+      renderSources();
+    } catch (e) {
+      sourceGrid.innerHTML = `<div class="source-loading">Error: ${e.message}</div>`;
+    }
+  } else {
+    // Browser mode: show a single "Share screen" card
+    allSources = [
+      { id: 'browser', name: 'Share Screen / Window', isScreen: true, thumbnail: null, appIcon: null },
+    ];
+    renderSources();
+  }
+}
+
+function renderSources() {
+  const filtered = allSources.filter(s =>
+    currentSrcFilter === 'screen' ? s.isScreen : !s.isScreen
+  );
+
+  if (filtered.length === 0) {
+    sourceGrid.innerHTML = '<div class="source-loading">No sources found.</div>';
+    return;
+  }
+
+  sourceGrid.innerHTML = filtered.map(s => `
+    <div class="source-card ${activeSource?.id === s.id ? 'selected' : ''}" data-id="${s.id}">
+      ${s.thumbnail
+        ? `<img class="source-thumb" src="${s.thumbnail}" alt="${s.name}" />`
+        : `<div class="source-thumb-placeholder">${s.isScreen ? '🖥' : '🪟'}</div>`
+      }
+      <div class="source-info">
+        ${s.appIcon ? `<img class="source-app-icon" src="${s.appIcon}" alt="" />` : ''}
+        <span class="source-card-name">${s.name}</span>
+      </div>
+    </div>
+  `).join('');
+
+  sourceGrid.querySelectorAll('.source-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const src = allSources.find(s => s.id === card.dataset.id);
+      if (src) selectSource(src);
+    });
+  });
+}
+
+function selectSource(src) {
+  activeSource = src;
+  sourceIndicator.style.display = 'flex';
+  sourceIcon.textContent = src.isScreen ? '🖥' : '🪟';
+  sourceName.textContent = src.name;
+  sourceModal.classList.add('hidden');
+}
+
+sourceClear.addEventListener('click', () => {
+  activeSource = null;
+  sourceIndicator.style.display = 'none';
+  stopMonitor();
+});
+
 // ── SCREEN CAPTURE ──
 async function captureScreen() {
+  // Electron path: silent capture via desktopCapturer
+  if (window.jarvisElectron && activeSource && activeSource.id !== 'browser') {
+    try {
+      const base64 = await window.jarvisElectron.captureSource(activeSource.id);
+      if (!base64) throw new Error('No data returned');
+      setCapture(base64);
+      return base64;
+    } catch (e) {
+      addMsg('jarvis', `Capture failed: ${e.message}`);
+      return null;
+    }
+  }
+
+  // Browser path: use getDisplayMedia (requires user interaction)
   try {
-    const stream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, preferCurrentTab: true });
-    const track = stream.getVideoTracks()[0];
-    const imageCapture = new ImageCapture(track);
-    const bitmap = await imageCapture.grabFrame();
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: { cursor: 'always', displaySurface: 'monitor' },
+      preferCurrentTab: false,
+    });
+    const track  = stream.getVideoTracks()[0];
+    const cap    = new ImageCapture(track);
+    const bitmap = await cap.grabFrame();
     track.stop();
     stream.getTracks().forEach(t => t.stop());
 
     const canvas = document.createElement('canvas');
-    canvas.width = bitmap.width;
+    canvas.width  = bitmap.width;
     canvas.height = bitmap.height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(bitmap, 0, 0);
-
+    canvas.getContext('2d').drawImage(bitmap, 0, 0);
     const base64 = canvas.toDataURL('image/png').split(',')[1];
-    currentScreenshot = base64;
-    pendingScreenshot = base64;
-
-    // Show preview
-    screenPreview.innerHTML = `<img src="data:image/png;base64,${base64}" alt="Screen capture" />`;
+    setCapture(base64);
     return base64;
   } catch (e) {
-    if (e.name !== 'AbortError') addMsg('jarvis', `Screen capture failed: ${e.message}. Try using the browser's screen sharing feature.`);
+    if (e.name !== 'AbortError') addMsg('jarvis', `Screen capture failed: ${e.message}`);
     return null;
   }
 }
 
+function setCapture(base64) {
+  currentScreenshot = base64;
+  pendingScreenshot = base64;
+  screenPreview.innerHTML = `<img src="data:image/png;base64,${base64}" alt="Capture" />`;
+}
+
 captureBtn.addEventListener('click', async () => {
   const img = await captureScreen();
-  if (img) addMsg('jarvis', 'Screen captured. I can now see your screen. Ask me anything about it.');
+  if (img) addMsg('jarvis', 'Screen captured. I can see your screen now — what would you like to know?');
 });
 
 screenBtn.addEventListener('click', async () => {
   const img = await captureScreen();
-  if (img) {
-    chatInput.focus();
-    chatInput.placeholder = 'Screen captured — ask me about it...';
+  if (img) { chatInput.focus(); chatInput.placeholder = 'Screen captured — ask me about it...'; }
+});
+
+// ── AUTO-MONITOR MODE ──
+monitorToggle.addEventListener('change', () => {
+  if (monitorToggle.checked) startMonitor();
+  else stopMonitor();
+});
+
+function startMonitor() {
+  if (!activeSource && !window.jarvisElectron) {
+    addMsg('jarvis', 'Select a screen or window first using the SELECT button.');
+    monitorToggle.checked = false;
+    return;
   }
+  const interval = parseInt(monitorInterval.value, 10);
+  monitorBadge.classList.remove('hidden');
+  monitorStatus.textContent = `Capturing every ${interval / 1000}s`;
+  monitorTimer = setInterval(doMonitorCapture, interval);
+  doMonitorCapture();
+}
+
+function stopMonitor() {
+  clearInterval(monitorTimer);
+  monitorTimer = null;
+  monitorToggle.checked = false;
+  monitorBadge.classList.add('hidden');
+  monitorStatus.textContent = 'Monitoring off';
+}
+
+async function doMonitorCapture() {
+  const base64 = await captureScreen();
+  if (!base64) { stopMonitor(); return; }
+
+  if (autoAnalyze.checked && !isSending) {
+    await sendMessage('What has changed or is happening on my screen right now? Be brief.', base64);
+  }
+}
+
+monitorInterval.addEventListener('change', () => {
+  if (monitorTimer) { stopMonitor(); startMonitor(); }
 });
 
 // ── CHAT ──
