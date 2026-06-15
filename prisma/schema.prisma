@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ProgressionStage {
+  NOT_STARTED
+  BARELY_STARTED
+  IN_DEPTH
+  ITS_MY_JOB
+}
+
+enum WorldStatus {
+  active
+  paused
+  archived
+  completed
+}
+
+enum DailyStepStatus {
+  pending
+  done
+}
+
+enum MemoryLogType {
+  decision
+  assumption
+  lesson
+  direction_change
+  note
+}
+
+enum PromptScope {
+  global
+  universe
+  world
+}
+
+enum Mode {
+  calm
+  gold
+}
+
+model Universe {
+  id        String   @id @default(cuid())
+  name      String
+  mission   String
+  icon      String?
+  color     String?
+  createdAt DateTime @default(now())
+
+  worlds World[]
+  dreams Dream[]
+  promptTemplates PromptTemplate[]
+}
+
+model World {
+  id               String           @id @default(cuid())
+  universeId       String
+  title            String
+  seed             String
+  intent           String
+  definitionOfDone String
+  progressionStage ProgressionStage
+  phaseLabel       String
+  status           WorldStatus      @default(paused)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  completedAt      DateTime?
+
+  universe Universe @relation(fields: [universeId], references: [id], onDelete: Cascade)
+  dailySteps DailyStep[]
+  memoryLogs WorldMemoryLog[]
+  promptTemplates PromptTemplate[]
+  promptRuns PromptRun[]
+}
+
+model Dream {
+  id         String   @id @default(cuid())
+  universeId String?
+  content    String
+  createdAt  DateTime @default(now())
+
+  universe Universe? @relation(fields: [universeId], references: [id], onDelete: SetNull)
+}
+
+model DailyStep {
+  id           String          @id @default(cuid())
+  worldId       String
+  date          String
+  stepText      String
+  status        DailyStepStatus @default(pending)
+  chosenReason  String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+
+  @@unique([worldId, date])
+}
+
+model WorldMemoryLog {
+  id        String        @id @default(cuid())
+  worldId   String
+  type      MemoryLogType
+  content   String
+  createdAt DateTime      @default(now())
+
+  world World @relation(fields: [worldId], references: [id], onDelete: Cascade)
+}
+
+model PromptTemplate {
+  id           String      @id @default(cuid())
+  name         String
+  scope        PromptScope
+  universeId   String?
+  worldId      String?
+  version      Int
+  templateText String
+  isDefault    Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  universe Universe? @relation(fields: [universeId], references: [id], onDelete: SetNull)
+  world    World?    @relation(fields: [worldId], references: [id], onDelete: SetNull)
+  promptRuns PromptRun[]
+}
+
+model PromptRun {
+  id         String   @id @default(cuid())
+  templateId String
+  worldId    String?
+  inputsJson String
+  outputText String
+  edited     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  template PromptTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  world    World?         @relation(fields: [worldId], references: [id], onDelete: SetNull)
+}
+
+model Settings {
+  id          Int      @id
+  mode        Mode     @default(calm)
+  closeOnDone Boolean  @default(true)
+}
